@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lesson/book_list_page.dart';
+import 'package:lesson/presentation/book_list/book_list_page.dart';
 import 'package:provider/provider.dart';
 
 import 'main_model.dart';
@@ -32,9 +32,9 @@ class MyApp extends StatelessWidget {
                     onPressed: () {
                       // ここでなにか
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BookListPage())
-                      );
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BookListPage()));
                     },
                   ),
                 ],
