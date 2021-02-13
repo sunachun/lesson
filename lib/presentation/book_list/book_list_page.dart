@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lesson/domain/book.dart';
 import 'package:lesson/presentation/add_book/add_book_page.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +21,45 @@ class BookListPage extends StatelessWidget {
                 .map(
                   (book) => ListTile(
                     title: Text(book.title),
+                    trailing: IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () async {
+                        //TODO 画面移動
+
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddBookPage(
+                              book: book,
+                            ),
+                            fullscreenDialog: true,
+                          ),
+                        );
+                        model.fetchBooks();
+                      },
+                    ),
+                    onLongPress: () async {
+                      //TODO: 削除
+                      await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('${book.title}を削除しますか？'),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('OK'),
+                                onPressed: () async {
+                                  Navigator.of(context).pop();
+
+                                  //TODO: 削除のAPIを叩く
+                                  await deleteBook(context, model, book);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                   ),
                 )
                 .toList();
@@ -47,6 +86,36 @@ class BookListPage extends StatelessWidget {
           );
         }),
       ),
+    );
+  }
+
+  Future deleteBook(
+      BuildContext context, BookListModel model, Book book) async {
+    try {
+      await model.deleteBook(book);
+      await model.fetchBooks();
+    } catch (e) {
+      await _showDialog(context, e.toString());
+      print(e.toString());
+    }
+  }
+
+  Future _showDialog(BuildContext context, String title) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
